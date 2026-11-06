@@ -360,7 +360,7 @@ For deeper context: [showcase workflow](docs/showcase-workflow.md) (every flow, 
 
 <div align="center">
 
-<p><strong>Built by Daksh · Yatin Gogia · Daksh Kumar · Piyush Kapoor</strong></p>
+<p><strong>Built by Daksh Walia · Daksh Kumar</strong></p>
 
 Careers built on evidence, not claims.
 
