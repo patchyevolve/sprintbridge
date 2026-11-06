@@ -1,0 +1,45 @@
+# Render Blueprint for the backend (Free plan). Create it from the Render dashboard:
+# New → Blueprint → this repository. Secrets are entered in the dashboard (sync: false), never committed.
+services:
+  - type: web
+    name: sprintbridge-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    # Second step pre-downloads the OCR models so the first scanned resume is not slow.
+    buildCommand: pip install -r requirements.txt && python -m app.services.ocr_worker --warm
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false  # the deployed frontend URL, comma-separated with http://localhost:5173
+      - key: GROQ_API_KEY
+        sync: false  # optional: resume/JD analysis returns 503 without it
+  - type: web
+    name: sprintbridge-frontend
+    runtime: static
+    branch: main
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 24.11.0
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        sync: false
